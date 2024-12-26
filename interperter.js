@@ -1,7 +1,7 @@
 const MainInterpreter = {
     variables: {},
     functions: {},
-    
+
     evalExpr: function(expr) {
         try {
             return eval(expr);
@@ -9,13 +9,13 @@ const MainInterpreter = {
             return `Error evaluating expression: ${e.message}`;
         }
     },
-    
+
     execLine: function(line) {
         const tokens = line.trim().split(/\s+/);
         if (tokens.length === 0) return '';
 
         const cmd = tokens[0];
-        
+
         if (cmd === 'let') {
             const varName = tokens[1];
             const value = this.evalExpr(tokens.slice(3).join(' '));
@@ -40,13 +40,13 @@ const MainInterpreter = {
             return `Simulated assembly: ${tokens.slice(1).join(' ')}\n`;
         }
     },
-    
+
     execFunction: function(funcName, args) {
         const func = this.functions[funcName];
         const [_, , ...funcBody] = func.split(/\s+/);
         return this.execLines(funcBody.join(' ').split(';'));
     },
-    
+
     execLines: function(lines) {
         let output = '';
         for (const line of lines) {
@@ -54,7 +54,7 @@ const MainInterpreter = {
         }
         return output;
     },
-    
+
     run: function(code) {
         this.variables = {};
         this.functions = {};
