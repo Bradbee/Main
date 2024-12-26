@@ -1,6 +1,7 @@
 const MainInterpreter = {
     variables: {},
     functions: {},
+    output: '',
 
     evalExpr: function(expr) {
         try {
@@ -35,9 +36,11 @@ const MainInterpreter = {
             return '';
         } else if (cmd === 'print') {
             const toPrint = tokens.slice(1).join(' ');
-            return `${this.evalExpr(toPrint)}\n`;
+            this.output += `${this.evalExpr(toPrint)}\n`;
+            return '';
         } else if (cmd === 'asm') {
-            return `Simulated assembly: ${tokens.slice(1).join(' ')}\n`;
+            this.output += `Simulated assembly: ${tokens.slice(1).join(' ')}\n`;
+            return '';
         }
     },
 
@@ -48,16 +51,16 @@ const MainInterpreter = {
     },
 
     execLines: function(lines) {
-        let output = '';
         for (const line of lines) {
-            output += this.execLine(line);
+            this.execLine(line);
         }
-        return output;
+        return this.output;
     },
 
     run: function(code) {
         this.variables = {};
         this.functions = {};
+        this.output = '';
         return this.execLines(code.trim().split('\n'));
     }
 };
