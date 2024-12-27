@@ -9,7 +9,7 @@ Welcome to **Main**, a groundbreaking new in development programming language th
 While **Main** is fully functional and ready for use, its true significance lies in the vast, interconnected project that it forms a part of. The language itself is merely a glimpse into a much broader vision, one that will unfold over time as more pieces are revealed.
 
 ### How to use.
-You need the latest version of python. simply download the zip file, extract it, open command prompt, type "cd <Directory of the extracted zip file>" and press enter, then type "python main.py" and press enter and your good!
+You need the latest version of python. simply download the zip file, extract it, open command prompt, type "cd {Directory of the extracted zip file}" and press enter, then type "python main.py" and press enter and your good!
 
 ### 🧩 Part of a Much Bigger Vision
 
