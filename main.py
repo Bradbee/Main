@@ -7,8 +7,8 @@ from utils import Utils
 
 class MainInterpreter:
     def __init__(self):
-        self.parser = Parser()
-        self.interpreter = Interpreter()
+        self.parser = None  # Will initialize it in the run method
+        self.interpreter = Interpreter() 
         self.debug_mode = False
         self.execution_log = []
 
@@ -41,7 +41,8 @@ class MainInterpreter:
             
             # Step 2: Parsing (Building AST)
             self.log_execution("Starting parsing...")
-            ast = self.parser.parse(tokens)
+            self.parser = Parser(tokens)  # Pass tokens to the parser
+            ast = self.parser.parse()
             self.log_execution("Parsing complete. AST generated.")
             
             # Step 3: Interpretation (Executing AST)
@@ -60,7 +61,7 @@ class MainInterpreter:
         print("Welcome to Main Language Interpreter.")
         while True:
             try:
-                code = input("Enter code (or 'exit' to quit): ")
+                code = input("Enter code (or 'exit' to quit): ") # the seccond piece is package hut
                 if code.lower() == 'exit':
                     print("Exiting interpreter.")
                     break
@@ -226,4 +227,4 @@ if __name__ == "__main__":
 
     # Handle user input for interactive mode
     interpreter.handle_user_input()
-
+    
