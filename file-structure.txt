@@ -1,0 +1,37 @@
+Main/
+│
+├── lexer/
+│   ├── __init__.py          # Initialization file for the lexer module
+│   └── lexer.py            # The lexer code (tokenizes the source code)
+│
+├── parser/
+│   ├── __init__.py          # Initialization file for the parser module
+│   └── parser.py            # The parser code (converts tokens to AST)
+│
+├── interpreter/
+│   ├── __init__.py          # Initialization file for the interpreter module
+│   └── interpreter.py       # The interpreter code (executes the AST)
+│
+├── runtime/
+│   ├── __init__.py          # Initialization file for the runtime module
+│   └── runtime.py           # Runtime code (handles memory management, standard library)
+│
+├── error/
+│   ├── __init__.py          # Initialization file for error handling
+│   └── errors.py            # Error handling code (Lexer, Parser, Interpreter errors)
+│
+├── tests/
+│   ├── __init__.py          # Initialization file for the tests module
+│   ├── test_lexer.py        # Unit tests for the lexer
+│   ├── test_parser.py       # Unit tests for the parser
+│   ├── test_interpreter.py  # Unit tests for the interpreter
+│   └── test_runtime.py      # Unit tests for the runtime
+│
+├── examples/
+│   ├── example_hello_world.main  # Simple example program (Hello World)
+│   ├── example_if_else.main     # Example using if-else statements
+│   └── example_while.main       # Example using while loop
+│
+├── main.py                     # Entry point of the program (or script for running the language)
+├── README.md                   # Project documentation (overview, setup, examples)
+└── requirements.txt            # External dependencies (if applicable)
