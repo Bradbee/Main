@@ -1,6 +1,6 @@
 # Main Programming Language
 
-Welcome to **Main**, a groundbreaking new programming language that is just one piece of a far-reaching, ambitious project destined to transform the world of software development.
+Welcome to **Main**, a groundbreaking new up and coming programming language that is just one piece of a far-reaching, ambitious project destined to transform the world of software development.
 
 ### 🚀 What is **Main**?
 
@@ -33,8 +33,8 @@ But this vision isn’t just about us—it’s about you, the developers, who wi
 Here’s a glimpse of where **Main** and the larger project are headed. This is just the beginning:
 
 - **Phase 1**: Release of the **Main** language, the first piece of a bigger puzzle
-- **Phase 2**: Early access to the ecosystem, as the first tools and integrations begin to take shape
-- **Phase 3**: Expanding the project into new areas, introducing groundbreaking features that change how developers work
+- **Phase 2**: Release of the seccond component.
+- **Phase 3**: Release of the third and most important component
 - **Phase 4**: Full-scale platform launch, where all components come together into a unified experience that transforms the software landscape
 
 ### 📚 Documentation
