@@ -1,7 +1,7 @@
 import sys
 from lexer import Lexer
 from parser import Parser
-from interpreter import MainInterpreter
+from interpreter import Interpreter
 
 class MainInterpreter:
     def __init__(self):
