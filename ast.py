@@ -1,45 +1,95 @@
 class ASTNode:
-    def __init__(self, node_type, **kwargs):
+    """
+    Base class for all AST nodes.
+    """
+    def __init__(self, node_type, children=None):
         self.type = node_type
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+        self.children = children or []
 
+class ProgramNode(ASTNode):
+    """
+    Represents the entire program (root node).
+    """
+    def __init__(self, children=None):
+        super().__init__("Program", children)
 
-# Utility functions for creating AST nodes
+class VariableDeclarationNode(ASTNode):
+    """
+    Represents a variable declaration (e.g., let x = 10).
+    """
+    def __init__(self, name, initializer):
+        super().__init__("VariableDeclaration")
+        self.value = {"name": name, "initializer": initializer}
 
-def create_program(statements):
-    return ASTNode('Program', body=statements)
+class FunctionDeclarationNode(ASTNode):
+    """
+    Represents a function declaration (e.g., function foo() {}).
+    """
+    def __init__(self, name, parameters, body, async_flag=False):
+        super().__init__("FunctionDeclaration")
+        self.value = {
+            "name": name,
+            "parameters": parameters,
+            "body": body,
+            "async": async_flag
+        }
 
-def create_variable_declaration(name, init):
-    return ASTNode('VariableDeclaration', name=name, init=init)
+class ClassDeclarationNode(ASTNode):
+    """
+    Represents a class declaration (e.g., class MyClass {}).
+    """
+    def __init__(self, name, super_class, body):
+        super().__init__("ClassDeclaration")
+        self.value = {"name": name, "superClass": super_class, "body": body}
 
-def create_identifier(name):
-    return ASTNode('Identifier', name=name)
+class ControlFlowNode(ASTNode):
+    """
+    Represents control flow statements (e.g., if, while).
+    """
+    def __init__(self, keyword, condition, body):
+        super().__init__("ControlFlow")
+        self.value = {"keyword": keyword, "condition": condition, "body": body}
 
-def create_literal(value):
-    return ASTNode('Literal', value=value)
+class ConcurrencyNode(ASTNode):
+    """
+    Represents concurrency constructs (e.g., spawn, join).
+    """
+    def __init__(self, keyword, target):
+        super().__init__("Concurrency")
+        self.value = {"keyword": keyword, "target": target}
 
-def create_binary_expression(left, operator, right):
-    return ASTNode('BinaryExpression', left=left, operator=operator, right=right)
+class MemoryManagementNode(ASTNode):
+    """
+    Represents memory management constructs (e.g., alloc, free, gc).
+    """
+    def __init__(self, keyword, variable=None):
+        super().__init__("MemoryManagement")
+        self.value = {"keyword": keyword, "variable": variable}
 
-def create_expression_statement(expression):
-    return ASTNode('ExpressionStatement', expression=expression)
+class CryptographyNode(ASTNode):
+    """
+    Represents cryptography functions (e.g., encrypt, decrypt, hash).
+    """
+    def __init__(self, keyword, argument):
+        super().__init__("Cryptography")
+        self.value = {"keyword": keyword, "argument": argument}
 
-def create_if_statement(condition, then_body, else_body=None):
-    return ASTNode('IfStatement', condition=condition, then=then_body, else=else_body)
+class ReflectionNode(ASTNode):
+    """
+    Represents reflection functions (e.g., reflect, proxy).
+    """
+    def __init__(self, keyword, argument):
+        super().__init__("Reflection")
+        self.value = {"keyword": keyword, "argument": argument}
 
-def create_function_declaration(name, params, body):
-    return ASTNode('FunctionDeclaration', name=name, params=params, body=body)
-
-def create_call_expression(callee, arguments):
-    return ASTNode('CallExpression', callee=callee, arguments=arguments)
-
-def create_return_statement(value):
-    return ASTNode('ReturnStatement', value=value)
-
-def create_while_loop(condition, body):
-    return ASTNode('WhileLoop', condition=condition, body=body)
-
-def create_for_loop(init, condition, update, body):
-    return ASTNode('ForLoop', init=init, condition=condition, update=update, body=body)
-
+class TryCatchNode(ASTNode):
+    """
+    Represents a try-catch-finally block.
+    """
+    def __init__(self, try_block, catch_block=None, finally_block=None):
+        super().__init__("TryCatch")
+        self.value = {
+            "try": try_block,
+            "catch": catch_block,
+            "finally": finally_block
+        }
