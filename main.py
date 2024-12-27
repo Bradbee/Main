@@ -7,7 +7,6 @@ from utils import Utils
 
 class MainInterpreter:
     def __init__(self):
-        self.lexer = Lexer()
         self.parser = Parser()
         self.interpreter = Interpreter()
         self.debug_mode = False
@@ -36,7 +35,8 @@ class MainInterpreter:
         try:
             # Step 1: Lexical Analysis (Tokenization)
             self.log_execution("Starting lexical analysis...")
-            tokens = self.lexer.tokenize(code)
+            lexer = Lexer(code)  # Pass the source code to the lexer here
+            tokens = lexer.tokenize()
             self.log_execution(f"Tokenization complete. {len(tokens)} tokens generated.")
             
             # Step 2: Parsing (Building AST)
