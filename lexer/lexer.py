@@ -1,79 +1,204 @@
 import re
 
-# Define constants for token types
-KEYWORDS = {'if', 'else', 'while', 'return', 'print', 'int', 'string', 'bool'}
-OPERATORS = {'+', '-', '*', '/', '%', '=', '==', '!=', '<', '>', '<=', '>='}
-BRACKETS = {'{', '}', '(', ')', '[', ']', ';'}
-LITERALS = {'true', 'false'}
+class Token:
+    """
+    Represents a token with a type and value.
+    """
+    def __init__(self, type_, value=None):
+        self.type = type_
+        self.value = value
 
-# Define regex patterns for various tokens
-TOKEN_PATTERNS = [
-    ('NUMBER', r'\d+(\.\d+)?'),  # Integer or Float
-    ('HEX_NUMBER', r'0x[0-9A-Fa-f]+'),  # Hexadecimal numbers
-    ('STRING', r'"([^"\\]|\\.)*"'),  # Double-quoted strings with escape sequences
-    ('ID', r'[a-zA-Z_][a-zA-Z_0-9]*'),  # Identifiers (variables, function names)
-    ('KEYWORD', r'\b(if|else|while|return|print|int|string|bool)\b'),  # Keywords
-    ('OPERATOR', r'(\+|-|\*|\/|\%|\=|\==|\!=|\<|\>|\<=|\>=)'),  # Operators
-    ('PUNCTUATION', r'[{}()\[\];,]'),  # Brackets and punctuation
-    ('WHITESPACE', r'\s+'),  # Whitespace (spaces, tabs, newlines)
-    ('COMMENT', r'//.*'),  # Single-line comments
-    ('MULTI_COMMENT', r'/\*.*?\*/'),  # Multi-line comments
-    ('ERROR', r'.'),  # Catch all unrecognized characters
-]
+    def __repr__(self):
+        return f"Token(type='{self.type}', value={self.value})"
 
 class Lexer:
+    """
+    Converts source code into tokens.
+    """
     def __init__(self, source_code):
         self.source_code = source_code
-        self.tokens = []
-        self.current_pos = 0
-        self.line = 1
-        self.column = 1
-        self._tokenize()
+        self.position = 0
+        self.current_char = self.source_code[self.position]
 
-    def _tokenize(self):
-        while self.current_pos < len(self.source_code):
-            matched = False
-            for token_type, pattern in TOKEN_PATTERNS:
-                regex = re.compile(pattern)
-                match = regex.match(self.source_code, self.current_pos)
-                if match:
-                    matched = True
-                    value = match.group(0)
-                    if token_type != 'WHITESPACE' and token_type != 'COMMENT':
-                        self.tokens.append((token_type, value))
-                    self._advance(len(value))
-                    break
-            if not matched:
-                self._advance(1)  # Skip unrecognized characters and continue
+    def advance(self):
+        """
+        Move to the next character in the source code.
+        """
+        self.position += 1
+        self.current_char = (
+            self.source_code[self.position] if self.position < len(self.source_code) else None
+        )
 
-    def _advance(self, length):
-        self.current_pos += length
-        self.column += length
-        if length == 1 and self.source_code[self.current_pos - 1] == '\n':
-            self.line += 1
-            self.column = 1
+    def peek(self):
+        """
+        Peek at the next character without advancing.
+        """
+        next_pos = self.position + 1
+        return self.source_code[next_pos] if next_pos < len(self.source_code) else None
 
-    def get_tokens(self):
-        return self.tokens
+    def skip_whitespace(self):
+        """
+        Skip over whitespace characters.
+        """
+        while self.current_char and self.current_char.isspace():
+            self.advance()
 
-    def _raise_error(self, message):
-        raise SyntaxError(f"Lexer error at line {self.line}, column {self.column}: {message}")
+    def skip_comments(self):
+        """
+        Skip single-line and multi-line comments.
+        """
+        if self.current_char == '/' and self.peek() == '/':
+            while self.current_char and self.current_char != '\n':
+                self.advance()
+        elif self.current_char == '/' and self.peek() == '*':
+            self.advance()
+            self.advance()
+            while self.current_char and not (self.current_char == '*' and self.peek() == '/'):
+                self.advance()
+            self.advance()
+            self.advance()
 
-    def display_tokens(self):
-        for token in self.tokens:
-            print(f"Token Type: {token[0]}, Value: {token[1]}")
+    def make_identifier_or_keyword(self):
+        """
+        Create an identifier or keyword token.
+        """
+        result = ""
+        while self.current_char and (self.current_char.isalnum() or self.current_char == '_'):
+            result += self.current_char
+            self.advance()
 
-# Example usage:
-source_code = """
-// This is a comment
-int x = 10;
-string name = "Main";
-if (x > 5) {
-    print("X is greater than 5");
-} else {
-    print("X is not greater than 5");
-}
-"""
+        keywords = [
+            # Variable Declarations
+            "let", "const", "var",
+            # Control Flow
+            "if", "else", "while", "for", "do", "continue", "break", "switch", "case", "default",
+            # Functions
+            "function", "return", "async", "await", "yield",
+            # Classes and Modules
+            "class", "extends", "import", "export", "default", "super", "static",
+            # Error Handling
+            "try", "catch", "throw", "finally",
+            # Advanced Features
+            "spawn", "join", "detach", "map", "set", "queue", "alloc", "free", "gc", "reflect",
+            "proxy", "asm", "type", "interface", "encrypt", "decrypt", "hash", "use strict", 
+            "debugger", "delete", "in", "instanceof", "new", "typeof", "with"
+        ]
+        token_type = "KEYWORD" if result in keywords else "IDENTIFIER"
+        return Token(token_type, result)
 
-lexer = Lexer(source_code)
-lexer.display_tokens()
+    def make_number(self):
+        """
+        Create a number token (integer, float, binary, octal, or hexadecimal).
+        """
+        result = ""
+        if self.current_char == '0' and self.peek() in {'x', 'b', 'o'}:
+            base = self.peek()
+            result += self.current_char + base
+            self.advance()
+            self.advance()
+            while self.current_char and (
+                self.current_char.isdigit() or (base == 'x' and self.current_char in 'abcdefABCDEF')
+            ):
+                result += self.current_char
+                self.advance()
+            return Token("NUMBER", int(result, {'x': 16, 'b': 2, 'o': 8}[base]))
+        else:
+            while self.current_char and (self.current_char.isdigit() or self.current_char == '.'):
+                result += self.current_char
+                self.advance()
+
+            if result.count('.') > 1:
+                raise ValueError("Invalid number format")
+            return Token("NUMBER", float(result) if '.' in result else int(result))
+
+    def make_string(self):
+        """
+        Create a string token.
+        """
+        quote_type = self.current_char
+        self.advance()
+        result = ""
+        while self.current_char and self.current_char != quote_type:
+            if self.current_char == '\\':  # Escape sequences
+                self.advance()
+                if self.current_char:
+                    result += self.current_char
+            else:
+                result += self.current_char
+            self.advance()
+
+        if self.current_char != quote_type:
+            raise ValueError("Unterminated string literal")
+        self.advance()
+        return Token("STRING", result)
+
+    def make_operator_or_symbol(self):
+        """
+        Create a token for operators or symbols.
+        """
+        symbols = {
+            # Arithmetic
+            '+', '-', '*', '/', '%', '**',
+            # Assignment
+            '=', '==', '===', '!=', '!==', '<', '>', '<=', '>=', '+=', '-=', '*=', '/=', '%=', '**=',
+            # Logical
+            '&&', '||', '!',
+            # Increment/Decrement
+            '++', '--',
+            # Bitwise
+            '&', '|', '^', '~', '<<', '>>', '>>>', '&=', '|=', '^=', '<<=', '>>=',
+            # Nullish Coalescing
+            '??',
+            # Optional Chaining
+            '?.',
+            # Ranges
+            '..',
+            # Other
+            '{', '}', '(', ')', '[', ']', ';', ',', ':', '.', '?', '...', '=>', '|>'
+        }
+
+        result = self.current_char
+        if self.current_char + self.peek() in symbols or self.current_char + self.peek() + self.peek() in symbols:
+            result += self.peek()
+            self.advance()
+            if self.current_char + self.peek() in symbols:
+                result += self.peek()
+                self.advance()
+
+        self.advance()
+        if result not in symbols:
+            raise ValueError(f"Unexpected symbol: {result}")
+        return Token("SYMBOL", result)
+
+    def get_next_token(self):
+        """
+        Get the next token from the source code.
+        """
+        while self.current_char:
+            if self.current_char.isspace():
+                self.skip_whitespace()
+                continue
+            if self.current_char == '/' and (self.peek() == '/' or self.peek() == '*'):
+                self.skip_comments()
+                continue
+            if self.current_char.isdigit() or self.current_char == '.':
+                return self.make_number()
+            if self.current_char.isalpha() or self.current_char == '_':
+                return self.make_identifier_or_keyword()
+            if self.current_char in {'"', "'"}:
+                return self.make_string()
+            if self.current_char in {'+', '-', '*', '/', '%', '=', '!', '<', '>', '&', '|', '^', '~', '?', ':', '.', '{', '}', '(', ')', '[', ']', ';', ','}:
+                return self.make_operator_or_symbol()
+
+            raise ValueError(f"Unknown character: {self.current_char}")
+
+        return Token("EOF")
+
+    def tokenize(self):
+        """
+        Tokenize the entire source code.
+        """
+        tokens = []
+        while self.current_char:
+            tokens.append(self.get_next_token())
+        return tokens
