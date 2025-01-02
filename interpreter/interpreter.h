@@ -4,8 +4,6 @@
 #include "parser.h"
 
 typedef struct {
-    // Define the structure for the environment/context
-    // For simplicity, we use a linked list for the environment
     struct EnvEntry* entries;
 } Environment;
 
